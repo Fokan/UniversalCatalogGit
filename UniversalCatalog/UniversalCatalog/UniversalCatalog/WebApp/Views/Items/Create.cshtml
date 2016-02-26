@@ -1,0 +1,110 @@
+﻿@model WebApp.Models.ItemViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<h2>Create</h2>
+
+@using (Html.BeginForm("Create", "Items", FormMethod.Post, new { enctype = "multipart/form-data" })) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Item</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("TypeId", ViewBag.Types as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control", @id="TypeId" })
+                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div id="properties">
+        </div>
+        
+        <div id="images">
+            @if(Model!=null)//.Images.ToList().Count!=0)
+            {
+
+            }
+            else
+            {
+                <input type="file" name="Images" class="Images" />
+                
+            }
+        </div>
+        <br /><p type="button" id="moreImage" style="width:40px; height:40px; text-align:center; padding:10px; background:grey;">+</p><br />
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        getprops();
+        $(document).on('change', "#TypeId", function () {
+            getprops();
+        });
+        $(document).on('click', "#moreImage", function () {
+            $("#images").append("<input type='file' name='Images' />");
+        });
+        
+    });
+
+    function getprops() {
+        Id = $("#TypeId").val();
+        var Properties = [];
+        var PropsPlace = document.getElementById("properties");
+        PropsPlace.innerHTML = "";
+        $.ajax({
+            url: "/Items/GetPropertiesByType",
+            cache: false,
+            async: false,
+            data: { "TypeId": Id },
+            success: function (data) {
+                Properties = [];
+                for (var i = 0; i < data.length; i++) {
+                    /*PropsPlace.innerHTML += "<tr><td>" + data[i].PropertyName + "</td>" +
+                        "<td><input type='text' data-Id='" + data[i].Id + "' value='' /></td></tr>";*/
+                    PropsPlace.innerHTML +=
+                    "<div class='form-group'><label class = 'control-label col-md-2'>" + data[i].Name +
+                    "</label><div class='col-md-10'>" +
+                    "<input type='hidden' name='IdsOfProps' value='" + data[i].Id + "' />" +
+                    "<input type='text' class = 'form-control' name='props' value='' /></div></div>";
+
+                }
+            }
+        });
+    }
+</script>

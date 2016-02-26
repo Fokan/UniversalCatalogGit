@@ -1,0 +1,40 @@
+﻿@model WebApp.Models.Entities.Property
+
+@{
+    ViewBag.Title = "Details";
+
+    string[] labelStyle = { "label-success", "label-primary", "label-info", "label-warning", "label-danger" };
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Property</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            Types
+        </dt>
+
+        <dd>
+            @{ int n = 1;}
+            @foreach(var type in Model.Types)
+            {
+                <a class="label @labelStyle[n%labelStyle.Length]" href="/Types/Details?id=@type.Id">@type.Name</a>
+                n++;
+            }
+        </dd>
+    </dl>
+    
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

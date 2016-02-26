@@ -1,0 +1,75 @@
+﻿@model WebApp.Models.Entities.Type
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Type</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        @if (Model.ParentType != null)
+        {
+        <dt>
+            @Html.DisplayNameFor(model => model.ParentType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ParentType.Name)
+        </dd>
+        }
+        @if (Model.Image != null)
+        { 
+        <dt>
+            Image
+        </dt>
+
+        <dd>
+            <img src="@Url.Action("GetImage", "Home", new { ImageId = Model.Image.Id })" alt="@Model.Image.Name" height="150" />
+        </dd>
+        }
+    </dl>
+    <H2>Властивості</H2>
+    <p>
+        @Html.ActionLink("Add new property", "Create", "Propertys", new { TypeId = Model.Id}, null) | 
+        @Html.ActionLink("Change connection between Type and Properties(add/remove to type)", "ChangeConnectionBetweenTypeAndProperties", new { TypeId = Model.Id })
+        
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Назва
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var property in Model.Properties)
+            {
+                <tr>
+                    <td>
+                        @property.Name
+                    </td>
+                    <td>
+                        @Html.ActionLink("Remove", "RemoveProperty", new { TypeId=Model.Id, PropertyId=property.Id })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

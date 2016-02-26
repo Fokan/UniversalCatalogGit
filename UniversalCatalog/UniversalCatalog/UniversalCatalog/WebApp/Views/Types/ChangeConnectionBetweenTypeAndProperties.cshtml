@@ -1,0 +1,50 @@
+﻿@model Dictionary<WebApp.Models.Entities.Property, bool>
+@{
+    ViewBag.Title = "ChangeConnectionBetweenTypeAndProperties";
+}
+
+<h2>Change connection between the type and properties</h2>
+
+<input type="hidden" value="@ViewBag.TypeId" name="TypeId" id="TypeId" />
+<h2>@ViewBag.TypeName</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Checked
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var property in Model)
+        {
+            <tr>
+                <td>
+                    @property.Key.Name
+                </td>
+                <td>
+                    @Html.CheckBox("checkBox", property.Value, new { @data_propid = property.Key.Id, @class = "checkForProperty" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.ActionLink("Details", "Details", new { id = ViewBag.TypeId })
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    $(document).on('change', ".checkForProperty", function () {
+        var checked = false;
+        var TypeId = $("#TypeId").val();
+        var PropertyId = $(this).data("propid");
+        if ($(this).is(":checked")) {
+            checked = true;
+        }
+        $.post("/types/ChangeConnectionBetweenTypeAndProperties", {TypeId: TypeId, PropertyId: PropertyId, Checked: checked});
+    });
+</script>

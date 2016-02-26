@@ -1,0 +1,45 @@
+﻿@model IEnumerable<WebApp.Models.Entities.Type>
+
+@{
+    ViewBag.Title = "Types";
+}
+
+<h2>Types</h2>
+
+<p>
+    @Html.ActionLink("Create New Type", "CreateType")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            Parent Type
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @if (item.ParentType == null)
+            {
+                <span>None</span>
+            }
+            else
+            {
+                <span>@item.ParentType.Name</span>
+            }
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditType", new { TypeId = item.Id }) |
+            @Html.ActionLink("Delete", "DeleteType", new { TypeId=item.Id })
+        </td>
+    </tr>
+}
+
+</table>
