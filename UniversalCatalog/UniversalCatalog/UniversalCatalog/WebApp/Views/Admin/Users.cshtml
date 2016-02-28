@@ -4,52 +4,62 @@
     ViewBag.Title = "Users";
 }
 
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datatable")
+@Styles.Render("~/bundles/datatablecss")
+@Scripts.Render("~/bundles/bootbox")
+<script src="~/Scripts/Admin/Users.js"></script>
 <h2>Users</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AccessFailedCount)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserName)
-        </th>
-        <th>
-            Role
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PhoneNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AccessFailedCount)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserName)
-        </td>
-        <th>
-            @*@Html.DropDownList("role", ViewBag.Roles as SelectList, new { Id = "role", data_UserId = item.Id })*@
-        </th>
-        <td>
-            @Html.ActionLink("Delete", "DeleteUser", new { UserId=item.Id })
-        </td>
-    </tr>
-}
-
+<table class="table" id="UserDataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccessFailedCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                Role
+            </th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccessFailedCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                @if (Roles.IsUserInRole(item.UserName, "admin"))
+                {
+                <td>
+                     <label>Admin</label>
+                </td>
+                <td>
+                </td>
+                }
+                else
+                {
+                    <td>
+                        <label>User</label>
+                    </td>
+                    <td>
+                        <button type="button" data-userid="@item.Id" class="btn btn-default deleteUser">Delete</button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
 </table>

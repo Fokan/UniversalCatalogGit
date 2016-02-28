@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using WebApp.Models;
 using WebApp.Models.Entities;
@@ -12,7 +13,7 @@ using WebApp.Models.UnitOfWork;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "admin, moderator")]
+    [Authorize(Roles = "admin")]
     public class TypesController : Controller
     {
         private IUnitOfWork _unitOfWork;
@@ -26,7 +27,7 @@ namespace WebApp.Controllers
             return View(_unitOfWork.Types.GetAll().Where(t=>t.Id!=Guid.Empty).ToList().OrderBy(type=>type.Name));
         }
 
-        public ActionResult Details(Guid? id)
+        public ActionResult Details(Guid id)
         {
             if (id == null)
             {
@@ -37,12 +38,13 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.IsParent = _unitOfWork.Types.IsThisTypeAsParent(id);
             return View(type);
         }
 
         public ActionResult Create()
         {
-            ViewBag.Types = _unitOfWork.Types.GetAll();
+            ViewBag.Types = _unitOfWork.Types.GetAll().Where(type=>type.Items.Count()==0 && type.Id!=Guid.Empty);
             return View();
         }
 
@@ -52,7 +54,7 @@ namespace WebApp.Controllers
         {
             if(_unitOfWork.Types.Count(t=>t.Name==type.Name)!=0)
             {
-                ModelState.AddModelError("", "Тип з іменем '"+type.Name+"' вже існує!");
+                ModelState.AddModelError("", "Type with name '" + type.Name+ "' already exists!");
             }
             if (File != null)
             {
@@ -75,7 +77,7 @@ namespace WebApp.Controllers
                 _unitOfWork.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.Types = _unitOfWork.Types.GetAll();
+            ViewBag.Types = _unitOfWork.Types.GetAll().Where(t =>type.Items.Count() == 0 && type.Id!=Guid.Empty);
             return View(type);
         }
 
@@ -90,7 +92,7 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            var types = _unitOfWork.Types.Where(t => t.Id != id && (t.ParentTypeId == null ? true : (t.ParentTypeId == id ? false : true)));
+            var types = _unitOfWork.Types.Where(t => (t.Id != id) && (t.Items.Count()==0) && (t.ParentTypeId == null ? true : (t.ParentTypeId == id ? false : true)));
             List<SelectListItem> sListItems = new List<SelectListItem>();
             foreach(var Type in types)
             {
@@ -169,7 +171,7 @@ namespace WebApp.Controllers
             }
             if(type.Items.Count!=0)
             {
-                ModelState.AddModelError("", "You can not remove this type. Exist products of this type.");
+                ModelState.AddModelError("", "You can not remove this type. Exist products of this type");
             }
             if (ModelState.IsValid)
             {
@@ -186,6 +188,28 @@ namespace WebApp.Controllers
             _unitOfWork.Types.Get(TypeId).Properties.Remove(_unitOfWork.Properties.Get(PropertyId));
             _unitOfWork.SaveChanges();
             return RedirectToAction("Details", new { Id = TypeId });
+        }
+
+        public JsonResult AddProperty(Guid TypeId, string PropertyName)
+        {
+            bool Error = false;
+            string id = "";
+            if(_unitOfWork.Properties.Count(property=>property.Name==PropertyName)!=0)
+            {
+                Error = true;
+            }
+            if(!Error)
+            {
+                Property Property = new Property()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = PropertyName
+                };
+                _unitOfWork.Types.Get(TypeId).Properties.Add(Property);
+                _unitOfWork.SaveChanges();
+                id = Property.Id.ToString();
+            }
+            return Json(new { Error = Error, Id = id}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

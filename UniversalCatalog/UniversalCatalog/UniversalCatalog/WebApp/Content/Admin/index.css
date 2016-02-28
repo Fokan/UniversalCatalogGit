@@ -1,0 +1,17 @@
+﻿    .imgDelete
+    {
+        margin-top:5px;
+        width:100%;
+    }
+
+    #imageList
+    {
+        display:flex;
+	    flex-wrap:wrap;
+	    align-content:space-around;
+	    justify-content:center;
+    }
+    .imageBox
+    {
+        margin:10px;
+    }

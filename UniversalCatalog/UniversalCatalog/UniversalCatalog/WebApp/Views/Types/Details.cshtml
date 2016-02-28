@@ -8,6 +8,7 @@
 
 <div>
     <h4>Type</h4>
+    <input type="hidden" value="@Model.Id" name="TypeId" id="TypeId" />
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -39,11 +40,14 @@
         }
     </dl>
     <H2>Властивості</H2>
-    <p>
-        @Html.ActionLink("Add new property", "Create", "Propertys", new { TypeId = Model.Id}, null) | 
-        @Html.ActionLink("Change connection between Type and Properties(add/remove to type)", "ChangeConnectionBetweenTypeAndProperties", new { TypeId = Model.Id })
+    @if (ViewBag.IsParent == false)
+    {
+        <p>
+            <button type="button" class="btn btn-primary" id="newProperty">Add new property</button>
+            @Html.ActionLink("Add/Remove properties", "ChangeConnectionBetweenTypeAndProperties", new { TypeId = Model.Id }, htmlAttributes: new { @class="btn btn-primary", @data_toggle = "tooltip", @title = "Change connection between Type and Properties" })
         
-    </p>
+        </p>
+    }
     <table class="table">
         <thead>
             <tr>
@@ -61,7 +65,7 @@
                         @property.Name
                     </td>
                     <td>
-                        @Html.ActionLink("Remove", "RemoveProperty", new { TypeId=Model.Id, PropertyId=property.Id })
+                        <button type="button" class="btn btn-primary deleteProperty pull-right" data-propertyid="@property.Id">x</button>
                     </td>
                 </tr>
             }
@@ -73,3 +77,9 @@
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
+
+@Scripts.Render("~/bundles/bootbox")
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/toastr")
+@Styles.Render("~/bundles/toastrcss")
+<script src="~/Scripts/Types/Details.js"></script>

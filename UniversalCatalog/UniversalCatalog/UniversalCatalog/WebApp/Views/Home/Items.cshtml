@@ -7,21 +7,19 @@
 <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
 <h2>@ViewBag.TypeName</h2>
 
-@*<div id="leftBox" class="col-md-3">
-    <div id="slider-container"></div>
-    <p>
-        <label for="amount">Price range:</label>
-        <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" />
-    </p>
-    <div id="slider-range"></div>
-</div>*@
-
-<div id="Content" class="col-md-9">
+<div id="Content" >
     <div id="items">
         @foreach (var item in Model.Items)
         {
             <div class="item" data-itemid="@item.Id">
-                <img src="@Url.Action("GetImage","Home", new {ImageId=item.Images.First().Id})" alt="@item.Name" />
+                @if (item.Images.ToList().Count != 0)
+                {
+                    <img src="@Url.Action("GetImage", "Home", new { ImageId = item.Images.First().Id })" alt="@item.Name" />
+                }
+                else
+                {
+                    <img src="~/Content/Sources/default.jpg" alt="@item.Name" />
+                }
                 <div>
                     <p>@item.Name</p>
                     <p>
@@ -43,114 +41,6 @@
     </center>
 </div>
 <div style="clear:both;"></div>
-<style>
-    #slider-container {
-    width:350px;
-    margin-left:30px;
-}
-    #items
-    {
-        display:flex;
-	    flex-wrap:wrap;
-	    align-content:space-around;
-	    justify-content:center;
-    }
-    .item
-    {
-        padding:20px;
-	    margin:10px;
-	    background:white;
-	    width:200px;
-	    border:2px solid #00aaee;
-	    border-radius:5px;
-    }
-    .item img
-    {
-        display:block;
-	    width:160px;
-	    margin:0 auto;
-	    max-height:210px;
-    }
-
-    .item:hover
-    {
-        box-shadow: 0 0 50px rgba(80, 57, 53, 0.7); 
-        -moz-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
-        -webkit-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
-	    transition:all 0.5s ease;
-    }
-
-    .item p
-    {
-        text-align:center;
-    }
-
-    /*.price
-    {
-        width:100%;
-        background:#33bbf1;
-        color:white;
-        padding:10px;
-    }*/
-
-    .price
-    {
-        display:block;
-        padding:10px; 
-        margin:10px;
-        border-radius: 50% / 50%;
-        background: #ffe121;
-        z-index: 1;
-        box-shadow: 0 4px 4px -4px #e1af00;
-        border-bottom: 1px solid #e1af00;
-        
-    }
-    .price span
-    {
-        
-        font: italic 15px/30px Impact;
-    }
-    .price
-    {
-        text-align:center;
-        box-shadow: 0 0 50px rgba(80, 57, 53, 0.7); 
-        -moz-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
-        -webkit-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
-    }
-
-</style>
+<link rel="stylesheet" href="~/Content/Home/items.css" />
 @Scripts.Render("/bundles/jquery")
-
-<script>
-    $(function () {
-        $('#slider-container').slider({
-            range: true,
-            min: 299,
-            max: 1099,
-            values: [299, 1099],
-            //create: function () {
-            //    $("#amount").val("$299 - $1099");
-            //},
-            slide: function (event, ui) {
-                $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
-                var mi = ui.values[0];
-                var mx = ui.values[1];
-                filterSystem(mi, mx);
-            }
-        })
-    });
-    
-    function filterSystem(minPrice, maxPrice) {
-        $("#computers div.system").hide().filter(function () {
-            var price = parseInt($(this).data("price"), 10);
-            return price >= minPrice && price <= maxPrice;
-        }).show();
-    }
-    $(document).ready(function(){
-        $(document).on('click', '.item', function () {
-            var id = $(this).data('itemid');
-            //window.location.href = $.get("/Home/Item", { ItemId: id });
-            window.location.assign("/Home/Item?ItemId="+ id );
-        });
-    });
-</script>
+<script src="~/Scripts/Home/items.js"></script>

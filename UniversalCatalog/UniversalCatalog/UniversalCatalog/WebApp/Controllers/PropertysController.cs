@@ -9,7 +9,7 @@ using WebApp.Models.UnitOfWork;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "admin, moderator")]
+    [Authorize(Roles = "admin")]
     public class PropertysController : Controller
     {
         private IUnitOfWork _unitOfWork;
@@ -19,13 +19,11 @@ namespace WebApp.Controllers
             _unitOfWork = new UnitOfWork();
         }
 
-        // GET: Properties
         public ActionResult Index()
         {
             return View(_unitOfWork.Properties.GetAll().OrderBy(property => property.Name));
         }
 
-        // GET: Properties/Details/5
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -40,16 +38,12 @@ namespace WebApp.Controllers
             return View(property);
         }
 
-        // GET: Properties/Create
         public ActionResult Create(Guid? TypeId)
         {
             ViewBag.TypeId = TypeId;
             return View();
         }
 
-        // POST: Properties/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name")] Property property, Guid? TypeId)
@@ -66,11 +60,10 @@ namespace WebApp.Controllers
                 _unitOfWork.SaveChanges();
                 return RedirectToAction("Index");
             }
-
+            ViewBag.TypeId = TypeId;
             return View(property);
         }
 
-        // GET: Properties/Edit/5
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -85,9 +78,6 @@ namespace WebApp.Controllers
             return View(property);
         }
 
-        // POST: Properties/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name")] Property property)
@@ -101,7 +91,6 @@ namespace WebApp.Controllers
             return View(property);
         }
 
-        // GET: Properties/Delete/5
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -116,7 +105,6 @@ namespace WebApp.Controllers
             return View(property);
         }
 
-        // POST: Properties/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(Guid id)

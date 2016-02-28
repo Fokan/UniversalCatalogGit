@@ -18,24 +18,7 @@ namespace WebApp.Migrations
         protected override void Seed(WebApp.Models.ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
-
-            //context.Roles.AddOrUpdate(role => role.Name,
-            //    new IdentityRole { Name = "admin" },
-            //    new IdentityRole { Name = "moderator" },
-            //    new IdentityRole { Name = "user" }
-            //    );
-
+            
             var RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
             string[] Roles = { "admin", "moderator", "user" };
             IdentityResult roleResult;

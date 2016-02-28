@@ -1,0 +1,42 @@
+﻿.delIcon
+    {
+        cursor:pointer;
+    }
+    #price
+    {
+        display:inline-block;
+        height: 66px;
+        border-radius: 50% / 50%;
+        background: #ffe121;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        box-shadow: 0 4px 4px -4px #e1af00;
+        border-bottom: 1px solid #e1af00;
+        line-height: 63px;
+        padding:10px;
+    }
+    #price span
+    {
+        padding:10px;
+        font: italic 25px/50px Impact;
+    }
+    #price, #jssor_1
+    {
+        box-shadow: 0 0 50px rgba(80, 57, 53, 0.7); 
+        -moz-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
+        -webkit-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
+    }
+    #comments
+    {
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        flex-direction:column-reverse;
+        justify-content:center;
+        align-content:flex-start;
+    }
+    .comment, #NewComment
+    {
+        width:100%;
+    }

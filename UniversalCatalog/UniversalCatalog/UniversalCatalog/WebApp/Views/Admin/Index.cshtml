@@ -48,73 +48,13 @@
 </div>
 
 <div style="display:none;">
-    @*@using (Ajax.BeginForm("AddSlideImage", null, new AjaxOptions
-    {
-        //UpdateTargetId = "results",
-        Confirm = "Выполнить AJAX-запрос?",
-        OnFailure = "OnFailure",
-        OnSuccess = "OnSuccess",
-    }, htmlAttributes: new { enctype = "multipart/form-data", @id="temporaryForm" }))*@
     @using (Html.BeginForm("AddSlideImage", "Admin", FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data", @id = "temporaryForm" }))
     {
-        <input type='file' id='file' name='File' @*style='display:none;'*@ accept='image/jpeg,image/gif,image/x-png' />
+        <input type='file' id='file' name='File' accept='image/jpeg,image/gif,image/x-png' />
         <input type="submit" id="submitImageForm" />
     }
 </div>
 
-<script>
-    //function OnFailure(request, error) {
-    //    $("#results").html("Книги указанного автора не содержатся в базе данных.");
-    //}
-    //function OnComplete(request, status) {
-    //    alert("Статус запроса : " + status);
-    //}
-
-    $(document).ready(function(){
-        $(document).on('click', '.imgDelete', function () {
-            var src = $(this).data("img");
-            $.post("/Admin/DeleteSlideImage", { ImageSRC: src });
-            $(this).parent(".img-thumbnail").hide();
-        });
-
-        $(document).on('click', '#fileupload', function () {
-            $("#file").click();
-        });
-        $(document).on('click', '#file', function (e) {
-            e.stopPropagation();
-        });
-        $(document).on('change', '#file', function () {
-            //$('#temporaryForm').submit();
-            $('#submitImageForm').click();
-            //var file = $("#file").file;
-
-            //$.ajax({
-            //    url: "/admin/AddSlideImage",
-            //    data: { File: file }
-            //});
-        });
-
-
-    });
-</script>
-
-<style>
-    .imgDelete
-    {
-        margin-top:5px;
-        width:100%;
-    }
-
-    #imageList
-    {
-        display:flex;
-	    flex-wrap:wrap;
-	    align-content:space-around;
-	    justify-content:center;
-    }
-    .imageBox
-    {
-        margin:10px;
-    }
-    
-</style>
+@Scripts.Render("~/bundles/bootbox")
+<script src="~/Scripts/Admin/index.js"></script>
+<link rel="stylesheet" href="~/Content/Admin/index.css" />

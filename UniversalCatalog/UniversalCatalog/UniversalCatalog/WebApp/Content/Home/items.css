@@ -1,0 +1,65 @@
+﻿#slider-container {
+    width:350px;
+    margin-left:30px;
+}
+    #items
+    {
+        display:flex;
+	    flex-wrap:wrap;
+	    align-content:space-around;
+	    justify-content:center;
+    }
+    .item
+    {
+        padding:20px;
+	    margin:10px;
+	    background:white;
+	    width:200px;
+	    border:2px solid #00aaee;
+	    border-radius:5px;
+    }
+    .item img
+    {
+        display:block;
+	    width:160px;
+	    margin:0 auto;
+	    max-height:210px;
+    }
+
+    .item:hover
+    {
+        box-shadow: 0 0 50px rgba(80, 57, 53, 0.7); 
+        -moz-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
+        -webkit-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
+	    transition:all 0.5s ease;
+    }
+
+    .item p
+    {
+        text-align:center;
+    }
+
+    .price
+    {
+        display:block;
+        padding:10px; 
+        margin:10px;
+        border-radius: 50% / 50%;
+        background: #ffe121;
+        z-index: 1;
+        box-shadow: 0 4px 4px -4px #e1af00;
+        border-bottom: 1px solid #e1af00;
+        
+    }
+    .price span
+    {
+        
+        font: italic 15px/30px Impact;
+    }
+    .price
+    {
+        text-align:center;
+        box-shadow: 0 0 50px rgba(80, 57, 53, 0.7); 
+        -moz-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
+        -webkit-box-shadow: 0 0 50px rgba(80, 57, 53, 0.7);
+    }

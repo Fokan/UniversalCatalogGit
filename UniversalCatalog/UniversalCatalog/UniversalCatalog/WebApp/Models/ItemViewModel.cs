@@ -17,8 +17,15 @@ namespace WebApp.Models
         [Required(AllowEmptyStrings =true)]
         public decimal Price { get; set; }
         public Guid[] IdsOfProps { get; set; }
-        public string[] props { get; set; }
+        public IEnumerable<string> props { get; set; }
 
         public IEnumerable<HttpPostedFileBase> Images { get; set; }
+
+        public ItemViewModel()
+        {
+            Images = new List<HttpPostedFileBase>();
+            props = new List<string>();
+
+        }
     }
 }

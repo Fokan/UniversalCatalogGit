@@ -12,7 +12,7 @@ using WebApp.Models.UnitOfWork;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "admin, moderator")]
+    [Authorize(Roles = "admin")]
     public class ItemsController : Controller
     {
         private IUnitOfWork _unitOfWork;
@@ -67,7 +67,7 @@ namespace WebApp.Controllers
         private IEnumerable<SelectListItem> SelectListOfTypes()
         {
             List<SelectListItem> types = new List<SelectListItem>();
-            foreach (var type in _unitOfWork.Types.GetAll().Where(type => type.Id != Guid.Empty))
+            foreach (var type in _unitOfWork.Types.GetAll().Where(type => type.Id != Guid.Empty).Where(type=>!(_unitOfWork.Types.IsThisTypeAsParent(type.Id))))
             {
                 types.Add(new SelectListItem() { Value = type.Id.ToString(), Text = type.Name });
             }
@@ -89,18 +89,7 @@ namespace WebApp.Controllers
             {
                 ModelState.AddModelError("", "Product with that name already exists");
             }
-            string[] types = { "image/jpeg", "image/png", "image/gif" };
-            if (itemVM.Images.Count(file => (types.Contains(file.ContentType))) != itemVM.Images.Count())
-            {
-                ModelState.AddModelError("", "Allowed file extensions: " + "\"image/jpeg\", \"image/png\", \"image/gif\"");
-            }
-            int index = 0;
-            //foreach(var description in itemVM.props)
-            //{
-            //    if (_unitOfWork.Descriptions.Count(desc => (desc.Value == description) && (desc.Property.Id == itemVM.IdsOfProps[index])) != 0)
-            //        ModelState.AddModelError("", " Descriptions error ");
-
-            //}
+            
             if (ModelState.IsValid)
             {
                 Item item = new Item()
@@ -111,7 +100,7 @@ namespace WebApp.Controllers
                     Price = itemVM.Price
                 };
                 int i = 0;
-                foreach (var description in itemVM.props)
+                foreach (var description in itemVM.props.ToList())
                 {
                     item.Descriptions.Add(new Description()
                     {
@@ -121,17 +110,20 @@ namespace WebApp.Controllers
                     });
                     i++;
                 }
-                foreach(var file in itemVM.Images)
+                foreach(var file in itemVM.Images.ToList())
                 {
-                    Image Image = new Image()
+                    if (file != null)
                     {
-                        Id = Guid.NewGuid(),
-                        ImageType = file.ContentType,
-                        Name = file.FileName,
-                        Data = new byte[file.ContentLength]
-                    };
-                    file.InputStream.Read(Image.Data, 0, file.ContentLength);
-                    item.Images.Add(Image);
+                        Image Image = new Image()
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageType = file.ContentType,
+                            Name = file.FileName,
+                            Data = new byte[file.ContentLength]
+                        };
+                        file.InputStream.Read(Image.Data, 0, file.ContentLength);
+                        item.Images.Add(Image);
+                    }
                 }
                 _unitOfWork.Items.Add(item);
                 _unitOfWork.SaveChanges();
@@ -142,7 +134,6 @@ namespace WebApp.Controllers
             return View(itemVM);
         }
 
-        // GET: Items/Edit/5
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -159,19 +150,57 @@ namespace WebApp.Controllers
 
         public void EditDescriptions(List<string[]> Descriptions, Guid ItemId)
         {
-            if (Descriptions == null)
-                return;
             var Item = _unitOfWork.Items.Get(ItemId);
-            foreach(var newDescription in Descriptions)
+            var oldDescription = Item.Descriptions;
+            foreach(var newDesc in Descriptions)
             {
-                var Description = Item.Descriptions.SingleOrDefault(desc => desc.Id.ToString() == newDescription[0]);
-                if(Description!=null)
+                var Desc = oldDescription.FirstOrDefault(desc => desc.Property.Id.ToString() == newDesc[0]);
+                if(Desc!=null)
                 {
-                    if (Description.Value != newDescription[1])
-                        Description.Value = newDescription[1];
+                    if(newDesc[1]!="")
+                    {
+                        if(newDesc[1]!=Desc.Value)
+                            Desc.Value = newDesc[1];
+                    }
+                    else
+                    {
+                        Item.Descriptions.Remove(Desc);
+                        _unitOfWork.Descriptions.Remove(Desc);
+                    }
+                }
+                else
+                {
+                    if (newDesc[1] != "")
+                    {
+                        Description newDescriptionForItem = new Description()
+                        {
+                            Id = Guid.NewGuid(),
+                            Property = _unitOfWork.Properties.Get(new Guid(newDesc[0])),
+                            Value = newDesc[1]
+                        };
+                        Item.Descriptions.Add(newDescriptionForItem);
+                    }
                 }
             }
             _unitOfWork.SaveChanges();
+        }
+
+        public ActionResult AddItemImage(Guid ItemId, HttpPostedFileBase File)
+        {
+            var Item = _unitOfWork.Items.Get(ItemId);
+            if (Item == null)
+                return HttpNotFound();
+            Image Image = new Image()
+            {
+                Id = Guid.NewGuid(),
+                ImageType = File.ContentType,
+                Name = File.FileName,
+                Data = new byte[File.ContentLength]
+            };
+            File.InputStream.Read(Image.Data, 0, File.ContentLength);
+            Item.Images.Add(Image);
+            _unitOfWork.SaveChanges();
+            return RedirectToAction("Details", new { Id = ItemId });
         }
 
         public JsonResult AddImage(Guid ItemId, HttpPostedFileBase File)
